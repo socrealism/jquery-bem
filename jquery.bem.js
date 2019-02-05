@@ -85,7 +85,14 @@
   BEM.prototype.findElem = function($this, elemKey) {
     var blockClass = this.getBlockClass($this)
         , elemSelector = '.' + this.buildElemClass(blockClass, elemKey)
-        , elem = $this.is(elemSelector) ? $this : $this.find(elemSelector);
+        , elem;
+
+    if ($this.is(elemSelector)) {
+      elem = $this;
+    } else {
+      elem = $this.find(elemSelector);
+      elem.selector = elemSelector;
+    }
 
     return elem;
   };
@@ -531,8 +538,12 @@
    * @param {String} selector
    * @return {Object}
    */
-  BEM.prototype.select = function(selector) {
-    return $(selector).ctx(selector);
+  BEM.prototype.select = function(selector, context) {
+    if (context) {
+      return $(selector, context).setSelector(selector);
+    }
+
+    return $(selector).setSelector(selector);
   };
 
   /**
@@ -559,6 +570,11 @@
 
     ctx: function(block, elem) {
       return $.BEM.switchBlock(this, block, elem);
+    },
+
+    setSelector: function(selector) {
+      this.selector = selector;
+      return this;
     },
 
     mod: function(modKey, modVal) {
