@@ -49,8 +49,9 @@
    */
   BEM.prototype.getBlock = function($this) {
     var blockClass = this.getBlockClass($this)
-      , block = $this.closest('.' + blockClass);
+        , block = $this.closest('.' + blockClass);
 
+    block.selector = blockClass;
     return block;
   };
 
@@ -67,8 +68,8 @@
     var elem = elem || null;
 
     elem
-      ? $this.selector = this.buildSelector({ block: block, elem: elem })
-      : $this.selector = this.buildSelector({ block: block });
+        ? $this.selector = this.buildSelector({ block: block, elem: elem })
+        : $this.selector = this.buildSelector({ block: block });
 
     return $this;
   };
@@ -83,8 +84,8 @@
    */
   BEM.prototype.findElem = function($this, elemKey) {
     var blockClass = this.getBlockClass($this)
-      , elemSelector = '.' + this.buildElemClass(blockClass, elemKey)
-      , elem = $this.is(elemSelector) ? $this : $this.find(elemSelector);
+        , elemSelector = '.' + this.buildElemClass(blockClass, elemKey)
+        , elem = $this.is(elemSelector) ? $this : $this.find(elemSelector);
 
     return elem;
   };
@@ -136,13 +137,15 @@
    * @param {Object}
    */
   BEM.prototype.setMod = function($this, modKey, modVal) {
-    var self = this;
+    var self = this,
+        selector = $this.selector;
 
     $this.each(function() {
       var current = $(this);
+      current.selector = selector;
 
       var mods = self.extractMods(current)
-        , baseName = self.getBaseClass(current);
+          , baseName = self.getBaseClass(current);
 
       if (mods[modKey] != undefined) {
         var oldModName = self.buildModClass(baseName, modKey, mods[modKey]);
@@ -154,8 +157,8 @@
       }
 
       current
-        .addClass(newModName)
-        .trigger('setmod', [modKey, modVal]);
+          .addClass(newModName)
+          .trigger('setmod', [modKey, modVal]);
     });
 
     return $this;
@@ -171,13 +174,15 @@
    * @param {Object}
    */
   BEM.prototype.delMod = function($this, modKey, modVal) {
-    var self = this;
+    var self = this,
+        selector = $this.selector;
 
     $this.each(function() {
       var current = $(this);
+      current.selector = selector;
 
       var mods = self.extractMods(current)
-        , baseName = self.getBaseClass(current);
+          , baseName = self.getBaseClass(current);
 
       if (modVal) {
         if (mods[modKey] == modVal) {
@@ -189,8 +194,8 @@
       }
 
       current
-        .removeClass(modName)
-        .trigger('delmod', [modKey, modVal]);
+          .removeClass(modName)
+          .trigger('delmod', [modKey, modVal]);
     });
 
     return $this;
@@ -208,15 +213,17 @@
    */
   BEM.prototype.byMod = function($this, modKey, modVal, inverse) {
     var self = this
-      , modVal = modVal || null
-      , inverse = inverse || false
-      , result = $();
+        , modVal = modVal || null
+        , inverse = inverse || false
+        , selector = $this.selector
+        , result = $();
 
     $this.each(function() {
       var current = $(this);
+      current.selector = selector;
 
       var mods = self.extractMods(current)
-        , baseName = self.getBaseClass(current);
+          , baseName = self.getBaseClass(current);
 
       if (modVal) {
         if (mods[modKey] == modVal) {
@@ -230,10 +237,11 @@
       }
 
       result = result.add(inverse
-        ? current.not('.' + modName)
-        : current.filter('.' + modName));
+          ? current.not('.' + modName)
+          : current.filter('.' + modName));
     });
 
+    result.selector = selector;
     return result;
   };
 
@@ -246,7 +254,7 @@
    */
   BEM.prototype.extractBlocks = function($this) {
     var self = this, result = []
-      , selectors = this.getClasses($this);
+        , selectors = this.getClasses($this);
 
     $.each(selectors, function(i, sel) {
       var type = self.getClassType(sel);
@@ -326,7 +334,11 @@
     var classes, result = [];
 
     if (typeof $this == 'object') {
-      if ($this.attr('class') != undefined) {
+
+      if ($this.selector && $this.selector.indexOf('.') === 0) {
+        classes = $this.selector.split('.');
+      }
+      else if ($this.attr('class') != undefined) {
         classes = $this.attr('class').split(' ');
       }
       else {
@@ -352,7 +364,7 @@
    */
   BEM.prototype.buildBlockClassRe = function() {
     return new RegExp(
-      '^(' + this.config.namePattern + ')$'
+        '^(' + this.config.namePattern + ')$'
     );
   };
 
@@ -364,7 +376,7 @@
    */
   BEM.prototype.buildElemClassRe = function() {
     return new RegExp(
-      '^' + this.config.namePattern + this.config.elemPrefix + '(' + this.config.namePattern + ')$'
+        '^' + this.config.namePattern + this.config.elemPrefix + '(' + this.config.namePattern + ')$'
     );
   };
 
@@ -376,7 +388,7 @@
    */
   BEM.prototype.buildModClassRe = function() {
     return new RegExp(
-      '^(?:' + this.config.namePattern + '|' + this.config.namePattern + this.config.elemPrefix + this.config.namePattern + ')' + this.config.modPrefix + '(' + this.config.namePattern + '((' + this.config.modDlmtr + this.config.namePattern + ')$|$))'
+        '^(?:' + this.config.namePattern + '|' + this.config.namePattern + this.config.elemPrefix + this.config.namePattern + ')' + this.config.modPrefix + '(' + this.config.namePattern + '((' + this.config.modDlmtr + this.config.namePattern + ')$|$))'
     );
   };
 
@@ -449,8 +461,8 @@
     }
 
     return buildSelector != undefined
-      ? prefix + buildSelector
-      : prefix + selector;
+        ? prefix + buildSelector
+        : prefix + selector;
   };
 
   /**
@@ -466,8 +478,8 @@
     var index = index || 0;
 
     return index <= blockClasses.length - 1
-      ? blockClasses[index]
-      : null;
+        ? blockClasses[index]
+        : null;
   };
 
   /**
@@ -483,6 +495,7 @@
 
     $.each(selectors, function(i, sel) {
       var classType = self.getClassType(sel);
+
       if (classType && classType != 'mod') {
         baseClass = sel;
       }
@@ -509,6 +522,17 @@
       return 'block';
     }
     return null;
+  };
+
+  /**
+   * Create jQuery object and add context.
+   * @protected
+   *
+   * @param {String} selector
+   * @return {Object}
+   */
+  BEM.prototype.select = function(selector) {
+    return $(selector).ctx(selector);
   };
 
   /**
@@ -547,8 +571,8 @@
       }
 
       return (modVal != null)
-        ? $.BEM.setMod(this, modKey, modVal)
-        : $.BEM.getMod(this, modKey);
+          ? $.BEM.setMod(this, modKey, modVal)
+          : $.BEM.getMod(this, modKey);
     },
 
     setMod: function(modKey, modVal) {
@@ -581,14 +605,13 @@
     toggleMod: function (modKey, modVal1, modVal2) {
       if (this.hasMod(modKey, modVal1)) {
         return this
-          .delMod(modKey, modVal1)
-          .setMod(modKey, modVal2);
+            .delMod(modKey, modVal1)
+            .setMod(modKey, modVal2);
       } else {
         return this
-          .delMod(modKey, modVal2)
-          .setMod(modKey, modVal1);
+            .delMod(modKey, modVal2)
+            .setMod(modKey, modVal1);
       }
-    }
+    },
   });
-
 }));
