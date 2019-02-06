@@ -1,4 +1,5 @@
-**Please, read the [deprecation notice](https://github.com/zenwalker/jquery-bem/issues/22)**
+**The original plugin is [deprecated](https://github.com/zenwalker/jquery-bem/issues/22) due to the lack of a selector property in jQuery 3.0.
+  This fork integrates a workaround based on jQuery migrate 1.4.1 and implements the selector property.**
 
 # jQuery.BEM
 
