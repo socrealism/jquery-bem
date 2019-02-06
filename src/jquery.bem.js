@@ -572,11 +572,6 @@
       return $.BEM.switchBlock(this, block, elem);
     },
 
-    setSelector: function(selector) {
-      this.selector = selector;
-      return this;
-    },
-
     mod: function(modKey, modVal) {
       if (typeof modVal == 'undefined') {
         modVal = null;
@@ -631,3 +626,46 @@
     },
   });
 }));
+
+/*!
+ * jQuery Migrate - v1.4.1 - 2016-05-19
+ * Copyright jQuery Foundation and other contributors
+ */
+(function( jQuery, window, undefined ) {
+  var oldInit = jQuery.fn.init,
+      oldFind = jQuery.find;
+
+  jQuery.fn.init = function( selector, context, rootjQuery ) {
+    var ret;
+
+    ret = oldInit.apply( this, arguments );
+
+    if ( selector && selector.selector !== undefined ) {
+      ret.selector = selector.selector;
+    }
+
+    return ret;
+  };
+  jQuery.fn.init.prototype = jQuery.fn;
+
+  jQuery.find = function( selector ) {
+    var args = Array.prototype.slice.call( arguments );
+    return oldFind.apply( this, args );
+  };
+
+  var findProp;
+  for ( findProp in oldFind ) {
+    if ( Object.prototype.hasOwnProperty.call( oldFind, findProp ) ) {
+      jQuery.find[ findProp ] = oldFind[ findProp ];
+    }
+  }
+
+  var oldFnFind = jQuery.fn.find;
+
+  jQuery.fn.find = function( selector ) {
+    var ret = oldFnFind.apply( this, arguments );
+    ret.selector = this.selector ? this.selector + " " + selector : selector;
+    return ret;
+  };
+
+})( jQuery, window );

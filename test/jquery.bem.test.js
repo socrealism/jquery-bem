@@ -118,11 +118,11 @@ QUnit.test('selecting elements', function(assert) {
 QUnit.test('selecting elements with context', function(assert) {
   var $fixture = $('#selecting-with-context');
 
-  var $blockA = $.BEM.select('.block-a', $fixture);
-  var $elemA = $.BEM.select('.block-a__elem', $fixture);
+  var $blockA = $('.block-a', $fixture);
+  var $elemA = $('.block-a__elem', $fixture);
 
-  var $blockB = $.BEM.select('.block-b', $fixture);
-  var $elemB = $.BEM.select('.block-b__elem', $fixture);
+  var $blockB = $('.block-b', $fixture);
+  var $elemB = $('.block-b__elem', $fixture);
 
   assert.equal($blockA.elem('elem')[0], $elemA[0]);
   assert.equal($blockB.elem('elem')[0], $elemB[0]);
